@@ -7,10 +7,10 @@
         <div class="hero-shade"></div>
         <header class="nav-wrap">
             <a href="{{ route('home') }}" class="wordmark">4Saudara<span>.</span></a>
-            <nav class="desktop-nav" aria-label="Navigasi utama"><a class="active" href="#beranda">Beranda</a><a href="#produk">Produk</a><a href="#cara-pesan">Cara pesan</a><a href="{{ route('tracking') }}">Cek pesanan</a></nav>
+            <nav class="desktop-nav" aria-label="Navigasi utama"><a class="active" href="#beranda" aria-current="page">Beranda</a><a href="#produk">Produk</a><a href="#cara-pesan">Cara pesan</a><a href="{{ route('tracking') }}">Cek pesanan</a></nav>
             <a class="nav-pill" href="{{ route('preorder') }}">Pre-Order <span aria-hidden="true">↗</span></a>
-            <button class="menu-toggle" type="button" aria-label="Buka menu navigasi" aria-expanded="false" aria-controls="mobile-nav"><span></span><span></span></button>
-            <nav class="mobile-nav" id="mobile-nav" aria-label="Navigasi seluler" hidden><a href="#beranda">Beranda</a><a href="#produk">Produk</a><a href="#cara-pesan">Cara pesan</a><a href="{{ route('tracking') }}">Cek pesanan</a><a href="{{ route('preorder') }}">Ajukan Pre-Order ↗</a></nav>
+            <button class="menu-toggle" type="button" aria-label="Buka menu navigasi" aria-expanded="false" aria-controls="mobile-nav"><span aria-hidden="true"></span><span aria-hidden="true"></span></button>
+            <nav class="mobile-nav" id="mobile-nav" aria-label="Navigasi seluler" hidden><a href="#beranda" aria-current="page">Beranda</a><a href="#produk">Produk</a><a href="#cara-pesan">Cara pesan</a><a href="{{ route('tracking') }}">Cek pesanan</a><a href="{{ route('preorder') }}">Ajukan Pre-Order ↗</a></nav>
         </header>
         <div class="hero-copy">
             <div class="eyebrow light"><span class="eyebrow-line"></span> KERIPIK SINGKONG 4 SAUDARA</div>

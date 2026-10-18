@@ -16,7 +16,7 @@
 <body>
     <a href="#konten" class="skip-link">Lewati ke konten</a>
     <div class="page-frame">
-        <div class="demo-ribbon"><span class="live-dot"></span> Prototype Capstone · Tampilan awal, pemesanan belum aktif</div>
+        <div class="demo-ribbon" role="note"><span class="live-dot" aria-hidden="true"></span> Prototype Capstone · Tampilan awal, pemesanan belum aktif</div>
         @yield('main')
         <footer class="footer" id="kontak">
             <div class="footer-brand"><a class="wordmark" href="{{ route('home') }}">4Saudara<span>.</span></a><p>Satu rasa khas.<br>Untuk momen yang sederhana.</p></div>
