@@ -1,4 +1,3 @@
-# Perancangan Database dan Entity Relationship Diagram (ERD)
 **SaudaraOrder — Sistem Pre-Order Keripik Singkong 4 Saudara Berbasis Web**  
 *Capstone Project — Teknik Informatika*  
 *Versi Dokumen: 1.0 | Tanggal: 26 Oktober 2026*  
