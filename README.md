@@ -24,6 +24,7 @@ Sistem Pre-Order Keripik Singkong 4 Saudara Berbasis Web.
 
 ## Dokumentasi
 - [PRD Project](docs/PRD.md)
+- [Perancangan Database & ERD](docs/DATABASE_ERD.md)
 - [Laporan Minggu 3](docs/progress/minggu-03.md)
 - [Screenshot Website](docs/screenshots/)
 
