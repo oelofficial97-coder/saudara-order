@@ -7,10 +7,11 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'username', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -25,8 +26,33 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
+            'is_active' => 'boolean',
             'password' => 'hashed',
         ];
+    }
+
+    public function auditLogs(): HasMany
+    {
+        return $this->hasMany(AuditLog::class);
+    }
+
+    public function cashTransactions(): HasMany
+    {
+        return $this->hasMany(CashTransaction::class, 'recorded_by');
+    }
+
+    public function uploadedPaymentProofs(): HasMany
+    {
+        return $this->hasMany(PaymentProof::class, 'uploaded_by');
+    }
+
+    public function verifiedPaymentProofs(): HasMany
+    {
+        return $this->hasMany(PaymentProof::class, 'verified_by');
+    }
+
+    public function decidedCancellationRequests(): HasMany
+    {
+        return $this->hasMany(CancellationRequest::class, 'decided_by');
     }
 }
