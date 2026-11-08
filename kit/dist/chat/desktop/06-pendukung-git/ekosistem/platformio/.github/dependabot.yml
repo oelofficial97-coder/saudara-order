@@ -1,0 +1,8 @@
+# Dirender dari stack.ecosystems di SPEC.json. Sesuaikan 'directory' bila manifest ada di subfolder.
+# Tidak didukung Dependabot (platformio): periksa versi dependensi secara manual.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"

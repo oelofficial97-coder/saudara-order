@@ -1,0 +1,429 @@
+{
+  "meta": {
+    "app_name": "SaudaraOrder",
+    "slug": "saudara-order",
+    "one_liner": "Website pre-order Keripik Singkong 4 Saudara untuk pencatatan pesanan, pengendalian kuota, dan tracking privat.",
+    "platform": "web",
+    "level": "loop",
+    "language": "id",
+    "ai_tools": [
+      "Codex",
+      "Antigravity",
+      "ChatGPT"
+    ],
+    "team_size": 1,
+    "duration_weeks": 10,
+    "delegated_questions": [
+      "C-14"
+    ],
+    "secondary_platforms": [],
+    "starting_point": "existing",
+    "created_date": "2026-11-06",
+    "assistant_proposed": [
+      "meta.slug",
+      "meta.one_liner",
+      "features",
+      "stack.commands",
+      "student_reflection.risk_controls",
+      "risks[1]",
+      "milestones[0].acceptance",
+      "data.personal_data",
+      "platform_specific.web.seo"
+    ]
+  },
+  "problem": {
+    "statement": "Pencatatan pesanan Keripik Singkong 4 Saudara masih mengandalkan ingatan dan catatan manual sehingga pesanan dapat terlupakan atau tidak tersampaikan. Belum ada sistem terintegrasi untuk antrean produksi, kapasitas, status, dan penyelesaian transaksi.",
+    "who": "Ibu/pengelola usaha, pemilik, dan pelanggan masyarakat umum.",
+    "current_alternative": "Pemesanan melalui WhatsApp, datang langsung, atau perantara; produksi setelah ada pesanan dengan perkiraan 1–3 hari dan pembayaran saat produk diterima."
+  },
+  "goals": [
+    "Memusatkan pesanan website, WhatsApp, Langsung, dan Perantara agar dapat dicocokkan dengan daftar pesanan admin.",
+    "Mengendalikan kapasitas batch tanpa kelebihan alokasi dan menyediakan tracking privat yang sesuai status pada admin."
+  ],
+  "non_goals": [
+    "Tidak membuat multi-produk atau variasi rasa; satu produk Rp5.000 per pouch.",
+    "Tidak mewajibkan akun pelanggan atau membuat aplikasi native.",
+    "Tidak mengaktifkan transfer, unggahan bukti, atau payment gateway pada tahap awal.",
+    "Tidak mengintegrasikan WhatsApp API, kurir eksternal, GPS, atau perhitungan ongkir otomatis.",
+    "Tidak mengganti stack, membangun ulang proyek, atau menghapus fitur existing.",
+    "Tidak menambahkan AI dalam aplikasi, PWA, offline, multi-bahasa, atau mode gelap terpisah.",
+    "Tidak menambahkan email transaksional, realtime, peta, analitik pihak ketiga, atau penyimpanan eksternal tanpa persetujuan."
+  ],
+  "users": [
+    {
+      "persona": "Pelanggan masyarakat umum",
+      "need": "Memesan tanpa akun dan memantau pesanan sendiri secara privat.",
+      "quote": "Belum ada kutipan langsung dari pengguna."
+    },
+    {
+      "persona": "Ibu/pengelola usaha",
+      "need": "Mencatat dan memproses seluruh pesanan secara terpusat sesuai hak akses.",
+      "quote": "Belum ada kutipan langsung dari pengguna."
+    },
+    {
+      "persona": "Pemilik usaha",
+      "need": "Mengatur batch, kapasitas, pengaturan usaha, dan memantau transaksi.",
+      "quote": "Belum ada kutipan langsung dari pengguna."
+    }
+  ],
+  "user_conditions": [
+    "Utamakan smartphone, juga mendukung tablet dan desktop.",
+    "Koneksi lambat atau terputus dan perangkat rendah merupakan pertimbangan desain, bukan hasil survei khusus.",
+    "Bahasa Indonesia sederhana; formulir ringkas, teks dan tombol mudah dibaca, animasi ringan.",
+    "Loading, empty, dan error state jelas; sukses hanya setelah server mengonfirmasi penyimpanan."
+  ],
+  "features": [
+    {
+      "id": "F1",
+      "name": "Pre-Order Pelanggan",
+      "description": "Pengajuan pesanan website tanpa akun pada batch yang menerima pengajuan, dengan pilihan pengambilan atau pengantaran.",
+      "priority": "must",
+      "acceptance": [
+        "Pengajuan valid menghasilkan kode dan token tracking privat, status Menunggu Konfirmasi, tanpa alokasi kuota.",
+        "Server menghitung 3 pouch sebagai Rp15.000 dan menyimpan snapshot harga; jumlah bukan integer positif ditolak.",
+        "Pengantaran tanpa alamat ditolak; pengambilan tidak mewajibkan alamat; WhatsApp website wajib.",
+        "Idempotency key sama tidak menggandakan pesanan; payload berbeda dengan key sama ditolak.",
+        "Tidak menampilkan keberhasilan sebelum penyimpanan dikonfirmasi server."
+      ]
+    },
+    {
+      "id": "F2",
+      "name": "Manajemen Batch dan Kuota Produksi",
+      "description": "Pertahankan manajemen batch existing dan kembangkan alokasi yang aman terhadap konkurensi.",
+      "priority": "must",
+      "acceptance": [
+        "Kuota hanya dialokasikan ketika konfirmasi berhasil; konfirmasi ulang tidak menambah alokasi lagi.",
+        "Dua konfirmasi bersamaan tidak boleh mengalokasikan melebihi kapasitas; buktikan dengan MySQL testing terpisah.",
+        "Kapasitas di bawah alokasi ditolak; kapasitas terkunci setelah produksi dimulai.",
+        "Hanya satu batch menerima pengajuan pada satu waktu; batch tertutup menolak pengajuan baru.",
+        "Selesai tidak melepas kuota; penutupan penerimaan mengikuti penyelesaian pengajuan tertunda sesuai PRD existing."
+      ]
+    },
+    {
+      "id": "F3",
+      "name": "Manajemen Pesanan Admin",
+      "description": "Kelola pesanan lintas saluran, konfirmasi, penolakan, produksi, penyerahan, dan penyelesaian sesuai hak akses.",
+      "priority": "must",
+      "acceptance": [
+        "Pemilik/pengelola berwenang memasukkan pesanan WhatsApp, Langsung, atau Perantara; WhatsApp manual boleh kosong; pesanan menunggu konfirmasi tanpa alokasi.",
+        "Pencarian kode atau nama mengembalikan pesanan yang sesuai; akses tanpa izin ditolak.",
+        "Pengantaran belum disepakati dengan pelanggan tidak dapat dikonfirmasi atau mengalokasikan kuota.",
+        "Pesanan hanya dapat menjadi Selesai setelah produk diterima dan pembayaran lunas; penyerahan tanpa pelunasan dicatat terpisah.",
+        "Penolakan mempunyai alasan dan setiap perubahan penting menyimpan audit pelaku, waktu, dan perubahan."
+      ]
+    },
+    {
+      "id": "F4",
+      "name": "Tracking Pesanan Privat",
+      "description": "Pelanggan melihat pesanan sendiri menggunakan kode dan token privat tanpa akun.",
+      "priority": "must",
+      "acceptance": [
+        "Kode dan token valid membuka pesanan terkait; kode saja, token salah, atau token pesanan lain ditolak.",
+        "Detail menampilkan status, quantity, total, batch, estimasi kesiapan, pembayaran, dan timeline sesuai database.",
+        "Token disimpan sebagai hash; catatan internal admin dan rahasia tidak ditampilkan pada pelanggan."
+      ]
+    },
+    {
+      "id": "F5",
+      "name": "Pencatatan dan Verifikasi Pembayaran",
+      "description": "Pencatatan manual tunai saat penyerahan, terpisah dari status pesanan, dengan riwayat yang dapat diaudit.",
+      "priority": "must",
+      "acceptance": [
+        "Admin berwenang mencatat pembayaran tunai dengan nominal sesuai transaksi yang disepakati; nominal rupiah berupa integer.",
+        "Pengulangan tindakan pembayaran tidak menggandakan transaksi penerimaan.",
+        "Status pembayaran terpisah; produk diserahkan tetapi belum lunas tidak menjadi Selesai.",
+        "Transfer, gateway, dan unggahan bukti tidak diaktifkan; struktur existing tetap dipertahankan."
+      ]
+    },
+    {
+      "id": "F6",
+      "name": "Dashboard, Pencarian, dan Laporan",
+      "description": "Kembangkan dashboard existing dengan rekap operasional, filter, dan ekspor berdasarkan data sebenarnya.",
+      "priority": "should",
+      "acceptance": [
+        "Ringkasan pesanan, pembayaran, dan kuota cocok dengan data rinci; tanpa data menampilkan empty state, bukan statistik palsu.",
+        "Filter menghasilkan data sesuai kriteria; laporan unduhan sesuai data rinci dan filter yang sama.",
+        "Pencarian dasar kode/nama tetap Must pada F3; perluasan laporan tidak menunda fitur inti."
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "name": "Ketepatan pencatatan pesanan",
+      "target": "Target angka belum ditentukan.",
+      "how_measured": "Bandingkan pesanan masuk dengan database/dashboard sebelum implementasi dan setelah penggunaan."
+    },
+    {
+      "name": "Ketepatan pengendalian kuota",
+      "target": "Tidak boleh terjadi kelebihan alokasi kuota.",
+      "how_measured": "Uji transaksi, perubahan status, dan konfirmasi bersamaan pada MySQL testing sebelum implementasi operasional."
+    },
+    {
+      "name": "Keberhasilan tracking privat",
+      "target": "Target angka belum ditentukan.",
+      "how_measured": "Uji token valid/tidak valid dan kesesuaian status sebelum implementasi dan saat UAT."
+    }
+  ],
+  "stack": {
+    "frontend": "Blade, CSS dan JavaScript existing, Vite; Tailwind tersedia sebagai dependensi.",
+    "backend": "PHP dan Laravel existing.",
+    "database": "MySQL, database pengembangan preorder_4_saudara; tidak diganti.",
+    "auth": "Session Laravel, password hash, rate limiting, role pemilik/pengelola dan akun aktif.",
+    "hosting": "Evaluasi Vercel terlebih dahulu; kandidat database Aiven MySQL Free; Render Docker hanya alternatif setelah persetujuan, bukan pengganti otomatis kewajiban UTS Vercel.",
+    "testing": "PHPUnit, evaluasi browser automation seperti Playwright, UAT, pengujian MySQL dan konkurensi terpisah.",
+    "keywords": [
+      "PHP",
+      "Laravel",
+      "Blade",
+      "MySQL",
+      "Vite",
+      "PHPUnit"
+    ],
+    "extra": [
+      "Composer dan NPM beserta lockfile dipertahankan.",
+      "Laravel Pint untuk format kode.",
+      "Tidak menjalankan composer run setup.",
+      "npm run dev opsional pada terminal terpisah.",
+      "MySQL/browser automation bukan otomatis tercakup dalam php artisan test."
+    ],
+    "source": "custom",
+    "custom_reason": "SaudaraOrder merupakan proyek existing yang telah memiliki implementasi frontend, backend, autentikasi, database, dan pengujian. Mempertahankan stack menghindari pembangunan ulang, migrasi yang tidak diperlukan, dan risiko kerusakan fitur yang sudah berjalan.",
+    "custom_layers": [],
+    "ecosystems": [
+      "php",
+      "node"
+    ],
+    "commands": {
+      "install": "composer install --no-interaction && npm ci",
+      "dev": "php artisan serve",
+      "lint": "php vendor/bin/pint --test",
+      "typecheck": "",
+      "test": "php artisan test",
+      "build": "npm run build",
+      "ci_setup": ""
+    },
+    "versions": [
+      "composer.json: PHP ^8.3; Laravel ^13.0; PHPUnit ^12.5.12; Pint ^1.27.",
+      "package.json: Vite ^7.0.7; Tailwind CSS ^4.0.0.",
+      "MySQL 8.4.3 menurut kondisi proyek yang dikonfirmasi; verifikasi runtime sebelum deployment."
+    ]
+  },
+  "data": {
+    "entities": [
+      {
+        "name": "users",
+        "fields": [
+          "id",
+          "name",
+          "username",
+          "password",
+          "role",
+          "is_active"
+        ]
+      },
+      {
+        "name": "products",
+        "fields": [
+          "id",
+          "name",
+          "price_rupiah",
+          "satuan pouch",
+          "satu rasa khas"
+        ]
+      },
+      {
+        "name": "business_settings",
+        "fields": [
+          "id",
+          "kontak",
+          "alamat usaha",
+          "rekening opsional",
+          "active_batch_id"
+        ]
+      },
+      {
+        "name": "production_batches",
+        "fields": [
+          "id",
+          "product_id",
+          "capacity_pouches",
+          "allocated_pouches",
+          "status penerimaan",
+          "estimasi siap",
+          "started_at",
+          "completed_at"
+        ]
+      },
+      {
+        "name": "orders",
+        "fields": [
+          "id",
+          "batch_id",
+          "kode unik",
+          "idempotency_key",
+          "nama pelanggan",
+          "WhatsApp",
+          "sumber",
+          "quantity_pouches",
+          "unit_price_rupiah",
+          "total_rupiah",
+          "status pesanan",
+          "status pembayaran",
+          "hash token",
+          "metode penyerahan (kebutuhan)",
+          "alamat pengantaran (kebutuhan)",
+          "kondisi penyerahan (kebutuhan)"
+        ]
+      },
+      {
+        "name": "payment_proofs",
+        "fields": [
+          "id",
+          "order_id",
+          "berkas privat",
+          "status verifikasi; fitur belum diaktifkan"
+        ]
+      },
+      {
+        "name": "cash_transactions",
+        "fields": [
+          "id",
+          "order_id",
+          "jenis transaksi",
+          "nominal integer rupiah",
+          "action_key",
+          "waktu",
+          "admin"
+        ]
+      },
+      {
+        "name": "cancellation_requests",
+        "fields": [
+          "id",
+          "order_id",
+          "alasan",
+          "status permintaan",
+          "keputusan"
+        ]
+      },
+      {
+        "name": "audit_logs",
+        "fields": [
+          "id",
+          "pelaku",
+          "order/batch terkait",
+          "tindakan",
+          "sebelum/sesudah",
+          "waktu"
+        ]
+      }
+    ],
+    "personal_data": "sensitive",
+    "sensitive_notes": "Kontak dan alamat serta informasi transaksi keuangan; enum sensitive merupakan pemetaan teknis konservatif, bukan pengumpulan data tambahan. Tidak meminta PIN/kredensial bank. Fields adalah ringkasan konseptual, bukan klaim seluruh kolom kebutuhan baru sudah tersedia. Detail migration mengikuti audit dan persetujuan terpisah."
+  },
+  "security": {
+    "roles": [
+      "pemilik",
+      "pengelola",
+      "pelanggan tanpa akun (akses pesanan sendiri menggunakan kode dan token)"
+    ],
+    "auth_method": "Session Laravel untuk staf; kode dan token privat untuk pelanggan; tanpa registrasi admin publik.",
+    "secrets_handling": "Environment variables hosting untuk kredensial dan APP_KEY; tidak masuk Git, tidak mengubah .env lokal. Audit tidak menyimpan token mentah atau password."
+  },
+  "ai_in_app": {
+    "mode": "none",
+    "purpose": "AI hanya membantu pengembangan; tidak ada fitur AI pelanggan/admin."
+  },
+  "design": {
+    "tone": "Identitas existing hijau gelap, krem dan sage; sederhana, profesional, responsif; pertahankan frontend.",
+    "primary_color": "#1C221A",
+    "font": "Pertahankan font existing: DM Serif Display untuk judul publik; admin memakai Georgia dan Arial/Helvetica.",
+    "dark_mode": false
+  },
+  "platform_specific": {
+    "web": {
+      "rendering": "fullstack-framework",
+      "i18n": false,
+      "seo": false
+    }
+  },
+  "risks": [
+    "Keterbatasan waktu pengembangan proyek individu dengan banyak fitur sebelum presentasi akhir.",
+    "Kompatibilitas Laravel/PHP pada Vercel dan integritas alokasi saat konkurensi perlu dibuktikan melalui evaluasi dan pengujian nyata."
+  ],
+  "student_reflection": {
+    "biggest_risk": "Risiko terbesar adalah keterbatasan waktu pengembangan.",
+    "why_this_project": "Motivasi saya memilih proyek SaudaraOrder adalah ingin membantu usaha Keripik Singkong 4 Saudara agar proses pencatatan dan pengelolaan pesanan menjadi lebih teratur, efektif, dan mudah dilakukan melalui sistem berbasis web. Selain itu, saya ingin meningkatkan kemampuan saya sebagai mahasiswa Teknik Informatika dalam mengembangkan aplikasi yang benar-benar dapat digunakan, mulai dari analisis kebutuhan, perancangan sistem, pengembangan frontend dan backend, pengelolaan database, pengujian, hingga deployment. Melalui proyek ini, saya berharap dapat menerapkan ilmu yang telah dipelajari selama perkuliahan sekaligus menghasilkan solusi yang bermanfaat bagi usaha tersebut.",
+    "risk_controls": [
+      "Memprioritaskan fitur Must. Menyelesaikan fitur pemesanan, manajemen pesanan, pengelolaan kuota batch, tracking privat, dan pencatatan pembayaran manual sebelum mengembangkan fitur tambahan berprioritas Should.",
+      "Menerapkan satu tugas utama per siklus Loop. Setiap pekerjaan dilakukan melalui tahap Plan → Code → Test → Review → Approval, dengan hasil pengujian dan perubahan yang terdokumentasi. Maksimal dua percobaan perbaikan otomatis untuk setiap kegagalan sebelum meminta arahan.",
+      "Melakukan evaluasi progres mingguan. Membandingkan hasil pengembangan dengan roadmap minggu ke-7 sampai minggu ke-16. Setiap laporan mingguan harus mencatat pekerjaan selesai, hasil pengujian, kendala, dan prioritas minggu berikutnya."
+    ]
+  },
+  "milestones": [
+    {
+      "id": "UTS",
+      "priority": "P0",
+      "deadline": "2026-11-10",
+      "timezone": "Asia/Jakarta",
+      "deliverables": [
+        "Link repository GitHub yang dapat diakses dosen.",
+        "Link website SaudaraOrder melalui Vercel."
+      ],
+      "acceptance": [
+        "Periksa akses URL repository sesuai pengaturan yang disepakati.",
+        "Uji HTTPS, routing, aset, dan fungsi yang dinyatakan siap demonstrasi pada URL Vercel.",
+        "Catat keterbatasan demo; build berhasil saja bukan bukti aplikasi berfungsi."
+      ],
+      "status": "Belum diverifikasi; tidak ada izin deployment pada persetujuan SPEC."
+    },
+    {
+      "id": "FINAL",
+      "priority": "Penyelesaian Capstone",
+      "deadline": null,
+      "week": 16,
+      "deliverables": [
+        "Fitur inti, pengujian, UAT, dokumentasi, video demonstrasi, dan presentasi."
+      ],
+      "status": "Tanggal resmi belum ditetapkan."
+    }
+  ],
+  "open_questions": [
+    "Jam batas pengumpulan UTS dan cakupan minimum demo dosen.",
+    "Biaya, wilayah dan jadwal pengantaran; tidak ada ongkir otomatis.",
+    "Hosting final dan kompatibilitas Vercel; Render perlu keputusan terpisah jika Vercel terkendala.",
+    "Alat browser automation dan database MySQL testing yang tersedia.",
+    "Target angka pencatatan dan tracking.",
+    "Pemulihan token pelanggan tanpa WhatsApp.",
+    "Penerapan perubahan jumlah, pembatalan dan pengembalian dari PRD lama terhadap tunai saat penyerahan.",
+    "Detail pemetaan sumber Perantara ke nilai existing Titipan dan status siap diambil untuk pengantaran.",
+    "Format dan cakupan laporan lanjutan; PRD lama menyebut CSV/cetak.",
+    "Konfirmasi detail teknis klasifikasi data dan SEO: sensitive dan seo=false adalah pemetaan dokumentasi, bukan penambahan data atau penghapusan SEO existing."
+  ],
+  "requirements_changes": [
+    "Penyerahan diperluas dari ambil di lokasi menjadi pengambilan/pengantaran; kesepakatan manual wajib sebelum konfirmasi pengantaran.",
+    "Pembayaran awal dibatasi tunai saat penyerahan; transfer dan unggahan bukti ditunda tanpa menghapus tabel.",
+    "Penyelesaian mensyaratkan barang diterima dan lunas; penyerahan dan pembayaran dicatat terpisah.",
+    "Tracking memakai kode DAN token.",
+    "Laporan lanjutan Should, pencarian dasar Must.",
+    "Sisa roadmap 10 minggu dan milestone UTS P0 terpisah.",
+    "Stack mengikuti implementasi existing, bukan seluruh pilihan awal PRD."
+  ],
+  "authorization": {
+    "spec_approved": true,
+    "documentation_new_files": true,
+    "overwrite_existing_documents": false,
+    "source_changes": false,
+    "database_changes": false,
+    "deployment": false,
+    "commit": false,
+    "push": false
+  },
+  "interview_notes": [
+    "C-14 sempat belum tahu; asisten hanya menjelaskan pertanyaan. Refleksi akhir ditulis mahasiswa sendiri, bukan pilihan risiko oleh asisten.",
+    "Tidak ada kutipan pengguna langsung; users.quote berisi penanda ketiadaan bukti, bukan kutipan rekaan.",
+    "Estimasi produksi 1–3 hari adalah kondisi operasional, bukan SLA.",
+    "P0 akademik tidak mengubah klasifikasi Must/Should.",
+    "PRD dan README existing memerlukan perbandingan serta persetujuan sebelum diganti."
+  ]
+}

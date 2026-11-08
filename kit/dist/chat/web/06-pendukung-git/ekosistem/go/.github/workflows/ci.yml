@@ -1,0 +1,29 @@
+# CI dirender dari SPEC.json (stack.ecosystems dan stack.commands).
+# Perintah harus identik dengan docs/EVALS.md, docs/TESTING.md, dan AGENTS.md.
+# Periksa versi action terbaru tiap semester; untuk produksi pin action ke SHA commit.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - name: Instal dependensi
+        run: echo "GANTI-PERINTAH: isi dengan stack.commands.install dari SPEC.json" && exit 1
+      - name: Lint
+        run: echo "GANTI-PERINTAH: isi dengan stack.commands.lint dari SPEC.json" && exit 1
+      - name: Tes
+        run: echo "GANTI-PERINTAH: isi dengan stack.commands.test dari SPEC.json" && exit 1
+      - name: Build
+        run: echo "GANTI-PERINTAH: isi dengan stack.commands.build dari SPEC.json" && exit 1

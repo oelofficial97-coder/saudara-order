@@ -1,38 +1,98 @@
-
 # SaudaraOrder
 
-**Capstone Project — Teknik Informatika**
+## About
 
-Sistem Pre-Order Keripik Singkong 4 Saudara Berbasis Web.
+SaudaraOrder membantu usaha Keripik Singkong 4 Saudara memusatkan pesanan dari website, WhatsApp, pelanggan langsung dan perantara. Pelanggan dapat memesan tanpa akun dan direncanakan memantau pesanan melalui kode serta token privat. Proyek Laravel ini sudah mempunyai frontend, autentikasi admin, pengaturan usaha, dashboard, manajemen batch, serta fondasi database; proses pesanan dan pembayaran pelanggan masih dikembangkan. Status rinci ada pada laporan progres, bukan diasumsikan dari keberadaan halaman prototipe.
 
-## Teknologi
-- Laravel 13
-- PHP 8.3
-- Blade, CSS, JavaScript
-- MySQL (direncanakan)
-- Git & GitHub
+## Features
 
-## Progres Pengembangan
+- F1 — Pre-Order Pelanggan (must): pengembangan direncanakan; belum diverifikasi selesai.
+- F2 — Manajemen Batch dan Kuota Produksi (must): fondasi existing, pengembangan/integrasi direncanakan.
+- F3 — Manajemen Pesanan Admin (must): pengembangan direncanakan; belum diverifikasi selesai.
+- F4 — Tracking Pesanan Privat (must): pengembangan direncanakan; belum diverifikasi selesai.
+- F5 — Pencatatan dan Verifikasi Pembayaran (must): pengembangan direncanakan; belum diverifikasi selesai.
+- F6 — Dashboard, Pencarian, dan Laporan (should): fondasi existing, pengembangan/integrasi direncanakan.
 
-| Minggu | Pekerjaan | Status |
-|---|---|---|
-| 1 | Penentuan judul project | Selesai |
-| 2 | Penyusunan PRD | Selesai |
-| 3 | Setup Laravel, GitHub dan landing page | Selesai |
-| 4 | Penyempurnaan frontend | Berikutnya |
-| 5 | Perancangan database | Direncanakan |
+Autentikasi admin, pengaturan usaha, model/database dan frontend telah tersedia menurut kondisi proyek. Periksa PROGRESS dan laporan minggu sebelumnya untuk batas implementasinya; status lama tidak dianggap tes terbaru.
 
-## Dokumentasi
-- [PRD Project](docs/PRD.md)
-- [Perancangan Database & ERD](docs/DATABASE_ERD.md)
-- [Laporan Minggu 3](docs/progress/minggu-03.md)
-- [Screenshot Website](docs/screenshots/)
+## Tech Stack
 
-## Fitur Saat Ini
-- Landing page SaudaraOrder
-- Halaman form pre-order (prototipe)
-- Halaman cek pesanan (prototipe)
-- Tampilan responsif
+PHP · Laravel · Blade · MySQL · Vite · PHPUnit. `composer.json` mensyaratkan PHP `^8.3` dan Laravel `^13.0`; `package.json` memuat Vite `^7.0.7` dan Tailwind CSS `^4.0.0` sebagai dependensi. Tampilan publik dan admin saat ini memakai Blade, CSS dan JavaScript dari `public/saudara/`; Vite tetap tersedia untuk aset proyek. Composer dan NPM menggunakan lockfile existing, Laravel Pint memeriksa format kode, dan PHPUnit memakai SQLite `:memory:` dalam `phpunit.xml`. Database aplikasi adalah MySQL; kondisi awal proyek mengonfirmasi MySQL 8.4.3, tetapi lingkungan komputer baru harus diverifikasi sendiri. Session Laravel dipakai pemilik/pengelola; pelanggan tidak wajib mendaftar.
 
-## Catatan
-Project masih dalam tahap pengembangan. Penyimpanan pesanan, pembayaran, dan pengelolaan kuota belum diaktifkan.
+## Getting Started
+
+1. Buka repository GitHub SaudaraOrder yang benar dan salin URL Clone melalui tombol **Code**. URL repository belum dicantumkan karena belum diverifikasi untuk dokumentasi ini. Di komputer baru, jalankan `git clone URL_REPOSITORY_GITHUB_YANG_DIVERIFIKASI saudara-order`, lalu masuk ke folder `saudara-order`. Ganti penanda URL dengan alamat GitHub sebenarnya; jangan mengetik penanda itu apa adanya.
+2. Siapkan PHP yang memenuhi `^8.3`, Composer, Node.js dan NPM yang kompatibel dengan lockfile serta Vite `^7`, dan MySQL untuk aplikasi. Periksa versi nyata dengan `php --version`, `composer --version`, `node --version`, `npm --version`, dan versi server MySQL dari pengelola instalasi. Pastikan ekstensi PHP yang diminta Composer/Laravel, terutama `pdo_mysql`, tersedia; jangan menyimpulkan kompatibilitas hanya dari nomor versi dokumentasi.
+3. Pada checkout baru, instal dependensi dengan perintah kanonis `composer install --no-interaction && npm ci`. Di PowerShell lama yang tidak mendukung `&&`, jalankan `composer install --no-interaction` dan `npm ci` sebagai dua perintah berurutan. Jangan menjalankan `composer run setup` karena skrip itu juga membuat konfigurasi serta menjalankan migration.
+4. **Hanya untuk checkout baru yang belum memiliki konfigurasi lokal:** salin `.env.example` menjadi `.env`. Isi `APP_NAME`, `APP_URL`, `DB_CONNECTION`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, dan `DB_PASSWORD` sesuai lingkungan yang memang disediakan. `.env.example` menyediakan `APP_KEY` kosong; buat nilainya dengan menjalankan `php artisan key:generate` **sekali pada `.env` lokal checkout baru**, setelah dependensi Composer terpasang. Perintah itu menulis kunci acak ke `.env` lokal; jangan menyalin kunci dari contoh, menampilkan nilainya, atau menjalankannya pada `.env` existing karena sesi dan data terenkripsi dapat terdampak. `.env.example` masih memberi contoh `DB_CONNECTION=sqlite`; gunakan `mysql` pada salinan lokal bila memakai MySQL. Jangan menaruh `.env` dalam Git. Untuk produksi, APP_KEY dibuat dan disimpan melalui mekanisme environment variables hosting setelah rencana deployment disetujui; kunci lokal tidak disalin ke repository.
+5. **Jika memakai database pengembangan existing:** verifikasi nama database yang dituju dan status migration secara baca-saja sebelum tindakan apa pun. Database `preorder_4_saudara` tidak boleh di-reset; jangan menjalankan migration atau seeder otomatis dari panduan ini. Data pemilik, batch, dan transaksi yang sudah ada harus dipertahankan.
+6. **Jika menyiapkan database lokal baru yang kosong:** sediakan database MySQL terpisah dengan hak akses yang benar. Pemeriksaan koneksi, migration non-destruktif, dan seeder satu produk dilakukan hanya setelah target database serta dampaknya ditinjau dan disetujui; panduan ini tidak menginstruksikan reset atau menganggap langkah tersebut sudah dijalankan. Sembilan entitas inti dan tabel pendukung berasal dari migration existing. `saudara:owner` memerlukan produk awal tersedia lebih dahulu.
+7. Jalankan `php artisan serve` dan buka alamat yang dicetak server. Untuk perubahan aset Vite, jalankan `npm run dev` pada terminal terpisah bila diperlukan; `npm run build` menghasilkan aset produksi. Halaman publik saat ini memakai CSS/JavaScript langsung dari `public/saudara/`, sehingga jangan menganggap build Vite sebagai bukti proses pre-order sudah aktif.
+8. Jika akun pemilik pertama belum ada dan database yang benar telah disiapkan, command interaktif `php artisan saudara:owner` dapat digunakan oleh pihak berwenang tanpa password tetap. Buka `/admin/login` untuk masuk dan `/admin/dashboard` setelah autentikasi. Jangan membuat akun contoh pada database operasional. Halaman `/pre-order` dan `/cek-pesanan` masih berupa prototipe tampilan.
+
+## Scripts and Commands
+
+| Tujuan | Perintah |
+|---|---|
+| install | `composer install --no-interaction && npm ci` |
+| dev | `php artisan serve` |
+| lint | `php vendor/bin/pint --test` |
+| test | `php artisan test` |
+| build | `npm run build` |
+
+`php artisan test` menggunakan SQLite `:memory:` berdasarkan `phpunit.xml`; tes MySQL dan browser automation merupakan pemeriksaan tambahan yang perintah serta database khususnya belum ditetapkan. Jangan menggunakan database pengembangan untuk tes yang mereset tabel. Perintah di tabel sama dengan `SPEC.json`; CI belum dikonfigurasi oleh pekerjaan dokumentasi.
+
+## Project Structure
+
+```text
+app/                 backend Laravel existing
+resources/views/     Blade publik/admin
+public/saudara/       CSS, JavaScript, gambar
+routes/              route publik dan admin
+database/            migration/seeder existing
+tests/               PHPUnit
+docs/                engineering dan laporan historis
+kit/                 sumber template
+SPEC.json            keputusan yang disetujui
+AGENTS.md            panduan agen
+```
+
+## Documentation
+
+| Dokumen | Fungsi |
+|---|---|
+| [SPEC.json](SPEC.json) | Keputusan kebutuhan dan milestone yang disetujui |
+| [AGENTS.md](AGENTS.md) | Aturan ringkas untuk agen coding |
+| [PRD](docs/PRD.md) | Kebutuhan produk SaudaraOrder yang telah disetujui untuk lokasi final ini |
+| [Arsitektur](docs/ARCHITECTURE.md) | Komponen, alur data, dan lingkungan |
+| [Sistem desain](docs/DESIGN_SYSTEM.md) | Warna, tipografi, komponen, dan aksesibilitas |
+| [Keamanan](docs/SECURITY.md) | Akses, privasi, dan ancaman |
+| [Gaya kode](docs/CODE_STYLE.md) | Konvensi PHP, Laravel, Blade, dan Git |
+| [Pengujian](docs/TESTING.md) | Strategi dan data uji terisolasi |
+| [Evaluasi](docs/EVALS.md) | Gerbang mutu dan acceptance |
+| [Alur kerja](docs/WORKFLOW.md) | Siklus tugas dan review |
+| [Batas kerja agen](docs/GUARDRAILS.md) | Larangan dan tindakan yang perlu persetujuan |
+| [Daftar tugas](docs/TASKS.md) | Task dan milestone P0 UTS sampai final |
+| [Progres](docs/PROGRESS.md) | Keadaan terbaru dan pekerjaan berikutnya |
+| [Keputusan](docs/DECISIONS.md) | ADR, perubahan kebutuhan, dan pertanyaan terbuka |
+| [Panduan review](docs/REVIEW.md) | Checklist pemeriksaan manusia |
+| [Pelajaran](docs/LESSONS.md) | Temuan dan pola kegagalan yang perlu diwaspadai |
+| [Proses Loop](docs/LOOP.md) | Batas putaran Plan → Code → Test → Review → Approval |
+| [ERD existing](docs/DATABASE_ERD.md) | Rancangan awal struktur database |
+| [Progres minggu ke-3](docs/progress/minggu-03.md) | Riwayat frontend awal |
+| [Progres minggu ke-5](docs/progress/minggu-05.md) | Riwayat fondasi database dan pengujian |
+| [Progres minggu ke-6](docs/progress/minggu-06.md) | Riwayat autentikasi admin, dashboard, dan batch |
+| [Screenshot existing](docs/screenshots/) | Gambar tampilan yang telah dicatat |
+| [Draf dokumen](docs/review-drafts/) | Berkas review sebelum penggantian PRD dan README |
+
+## Contributing
+
+Ikuti WORKFLOW dan CODE_STYLE: satu tugas, rencana, implementasi, pengujian, review, approval. Agen mengikuti AGENTS. Commit/push/deployment memerlukan persetujuan terpisah; jangan mengubah database pengembangan untuk menjalankan tes. Kebutuhan yang bertentangan dengan SPEC diklarifikasi dahulu.
+
+## AI Usage Disclosure
+
+Codex digunakan sebagai coding agent, Antigravity sebagai IDE dan ChatGPT sebagai pendamping analisis. Dokumen engineering diturunkan dari SPEC yang dikonfirmasi mahasiswa. Mahasiswa bertanggung jawab meninjau dan memahami perubahan; tidak diklaim bahwa semua pekerjaan sudah direview.
+
+## Status
+
+Existing, pengembangan bertahap; lihat [Progres](docs/PROGRESS.md). P0 UTS Selasa 10 November 2026 mensyaratkan link GitHub dan website Vercel yang dapat diuji. Milestone ini terpisah dari penyelesaian Capstone minggu ke-16. URL deployment belum diverifikasi dan aplikasi belum dinyatakan telah online.

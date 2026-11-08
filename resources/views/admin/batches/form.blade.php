@@ -1,0 +1,15 @@
+@extends('admin.layout')
+@section('title', $batch->exists ? 'Edit batch' : 'Tambah batch')
+@section('intro', 'Rencanakan produksi dengan kapasitas yang sesuai.')
+@section('actions')<a class="text-link" href="{{ route('admin.batches.index') }}">← Kembali ke daftar</a>@endsection
+@section('content')
+<div class="form-grid"><section class="panel"><h2>Informasi produksi</h2><p class="muted">{{ $product?->name ?? 'Produk aktif belum tersedia' }}</p>
+<form method="post" action="{{ $batch->exists ? route('admin.batches.update', $batch) : route('admin.batches.store') }}">
+    @csrf @if($batch->exists) @method('put') @endif
+    <div class="field"><label for="batch_name">Nama batch <span aria-hidden="true">*</span></label><input id="batch_name" name="batch_name" value="{{ old('batch_name', $batch->batch_name) }}" maxlength="100" required @error('batch_name') aria-invalid="true" aria-describedby="batch_name_error" @enderror>@error('batch_name')<small class="field-error" id="batch_name_error">{{ $message }}</small>@enderror</div>
+    <div class="field"><label for="capacity_pouches">Kapasitas (pouch) <span aria-hidden="true">*</span></label><input id="capacity_pouches" name="capacity_pouches" type="number" min="1" max="4294967295" step="1" value="{{ old('capacity_pouches', $batch->capacity_pouches) }}" required @error('capacity_pouches') aria-invalid="true" aria-describedby="capacity_error" @enderror>@error('capacity_pouches')<small class="field-error" id="capacity_error">{{ $message }}</small>@enderror @if($batch->exists)<small>Teralokasi saat ini: {{ $batch->allocated_pouches }} pouch. Kapasitas tidak dapat diubah setelah produksi dimulai.</small>@endif</div>
+    <div class="field"><label for="estimated_ready_at">Estimasi siap diambil (WIB)</label><input id="estimated_ready_at" name="estimated_ready_at" type="datetime-local" value="{{ old('estimated_ready_at', $batch->estimated_ready_at?->setTimezone('Asia/Jakarta')->format('Y-m-d\TH:i')) }}" @error('estimated_ready_at') aria-invalid="true" aria-describedby="estimate_error" @enderror><small>Isi estimasi masa mendatang sebelum membuka penerimaan.</small>@error('estimated_ready_at')<small class="field-error" id="estimate_error">{{ $message }}</small>@enderror</div>
+    <div class="field"><label for="notes">Catatan internal</label><textarea id="notes" name="notes" rows="4" maxlength="5000">{{ old('notes', $batch->notes) }}</textarea></div>
+    <div class="form-actions"><button type="submit" class="button" @disabled(!$product)>{{ $batch->exists ? 'Simpan perubahan' : 'Simpan batch' }}</button><a href="{{ route('admin.batches.index') }}" class="text-link">Batal</a></div>
+</form></section><aside class="panel soft form-aside"><p class="eyebrow">PERSIAPAN YANG TERUKUR</p><h2>Satu batch,<br>satu kapasitas.</h2><p>Gunakan jumlah pouch bulat dan positif. Pesanan menunggu konfirmasi belum memakai kuota.</p><hr><p>Penerimaan dibuka dan ditutup manual dari daftar batch. Menyimpan estimasi tidak otomatis membuka penerimaan.</p>@if($batch->exists)<dl class="facts"><div><dt>Kode batch</dt><dd class="mono">{{ $batch->batch_code }}</dd></div></dl>@endif</aside></div>
+@endsection

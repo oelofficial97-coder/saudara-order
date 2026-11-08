@@ -1,0 +1,45 @@
+# Vercel Container Runtime: build the existing Vite assets with the project's Node 22 toolchain.
+FROM node:22-alpine AS assets
+WORKDIR /app
+COPY package.json package-lock.json vite.config.js ./
+COPY resources ./resources
+RUN npm ci --no-audit --no-fund && npm run build
+
+# Use the same PHP runtime for Composer's platform check and for HTTP requests.
+FROM dunglas/frankenphp:1-php8.4-alpine AS php-base
+WORKDIR /app
+RUN cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
+    && install-php-extensions pdo_mysql intl zip opcache
+
+FROM php-base AS dependencies
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+RUN apk add --no-cache unzip
+COPY composer.json composer.lock artisan ./
+COPY app ./app
+COPY bootstrap ./bootstrap
+COPY config ./config
+COPY database ./database
+COPY public ./public
+COPY resources ./resources
+COPY routes ./routes
+RUN mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs \
+    && composer install --no-dev --no-interaction --prefer-dist --no-progress --optimize-autoloader \
+    && composer check-platform-reqs --no-dev
+
+FROM php-base AS runtime
+COPY --from=dependencies /app /app
+COPY --from=assets /app/public/build /app/public/build
+COPY Caddyfile.vercel /etc/caddy/Caddyfile
+
+# Vercel Functions only provide temporary writable space. No application data lives here permanently.
+RUN rm -rf /app/storage && ln -s /tmp/saudara-order/storage /app/storage
+ENV PORT=80 \
+    APP_ENV=production \
+    APP_DEBUG=false \
+    LOG_CHANNEL=stderr \
+    SESSION_DRIVER=database \
+    CACHE_STORE=database \
+    QUEUE_CONNECTION=sync \
+    XDG_DATA_HOME=/tmp/saudara-order/caddy/data \
+    XDG_CONFIG_HOME=/tmp/saudara-order/caddy/config
+CMD ["sh", "-c", "mkdir -p /tmp/saudara-order/storage/framework/cache/data /tmp/saudara-order/storage/framework/sessions /tmp/saudara-order/storage/framework/views /tmp/saudara-order/storage/logs /tmp/saudara-order/storage/app/private /tmp/saudara-order/storage/app/public && exec frankenphp run --config /etc/caddy/Caddyfile"]
