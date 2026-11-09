@@ -3,6 +3,39 @@
 use Illuminate\Support\Str;
 use Pdo\Mysql;
 
+$resolveSslCa = static function (): ?string {
+    $ca = env('MYSQL_ATTR_SSL_CA');
+    if (! empty($ca)) {
+        if (file_exists($ca)) {
+            return $ca;
+        }
+        if (str_starts_with($ca, '/app/')) {
+            $relative = substr($ca, 5);
+            if (file_exists(base_path($relative))) {
+                return base_path($relative);
+            }
+        }
+        if (file_exists(base_path($ca))) {
+            return base_path($ca);
+        }
+        if (file_exists(database_path($ca))) {
+            return database_path($ca);
+        }
+        if (file_exists(database_path('certs/ca.pem'))) {
+            return database_path('certs/ca.pem');
+        }
+
+        return $ca;
+    }
+
+    $host = env('DB_HOST', '');
+    if (str_contains($host, 'aivencloud.com') && file_exists(database_path('certs/ca.pem'))) {
+        return database_path('certs/ca.pem');
+    }
+
+    return null;
+};
+
 return [
 
     /*
@@ -60,7 +93,7 @@ return [
             'strict' => true,
             'engine' => 'InnoDB',
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
+                (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => $resolveSslCa(),
             ]) : [],
         ],
 
@@ -80,7 +113,7 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
+                (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => $resolveSslCa(),
             ]) : [],
         ],
 
