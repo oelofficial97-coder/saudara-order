@@ -17,10 +17,18 @@ $app = Application::configure(basePath: dirname(__DIR__))
         $middleware->alias(['admin.active' => EnsureActiveAdmin::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->report(function (Throwable $e): void {
+            error_log(sprintf(
+                'SAUDARA_EXCEPTION: %s: "%s" in %s:%d',
+                get_class($e),
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine()
+            ));
+        });
     })->create();
 
-if ($storagePath = env('LARAVEL_STORAGE_PATH')) {
+if ($storagePath = (getenv('LARAVEL_STORAGE_PATH') ?: env('LARAVEL_STORAGE_PATH'))) {
     $app->useStoragePath($storagePath);
 }
 

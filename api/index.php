@@ -16,11 +16,20 @@ $requiredDirectories = [
     $storagePath.'/logs',
     $storagePath.'/app/private',
     $storagePath.'/app/public',
+    $storagePath.'/certs',
 ];
 
 foreach ($requiredDirectories as $directory) {
     if (! is_dir($directory)) {
         mkdir($directory, 0755, true);
+    }
+}
+
+$targetCa = $storagePath.'/certs/ca.pem';
+if (! file_exists($targetCa)) {
+    $sourceCa = __DIR__.'/../database/certs/ca.pem';
+    if (file_exists($sourceCa)) {
+        copy($sourceCa, $targetCa);
     }
 }
 

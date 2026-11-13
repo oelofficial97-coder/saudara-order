@@ -5,32 +5,32 @@ use Pdo\Mysql;
 
 $resolveSslCa = static function (): ?string {
     $ca = env('MYSQL_ATTR_SSL_CA');
-    if (! empty($ca)) {
-        if (file_exists($ca)) {
-            return $ca;
-        }
-        if (str_starts_with($ca, '/app/')) {
-            $relative = substr($ca, 5);
-            if (file_exists(base_path($relative))) {
-                return base_path($relative);
-            }
-        }
-        if (file_exists(base_path($ca))) {
-            return base_path($ca);
-        }
-        if (file_exists(database_path($ca))) {
-            return database_path($ca);
-        }
-        if (file_exists(database_path('certs/ca.pem'))) {
-            return database_path('certs/ca.pem');
-        }
+    $candidates = [
+        $ca,
+        ! empty($ca) && str_starts_with($ca, '/app/') ? base_path(substr($ca, 5)) : null,
+        ! empty($ca) && function_exists('base_path') ? base_path($ca) : null,
+        ! empty($ca) && function_exists('database_path') ? database_path($ca) : null,
+        '/tmp/storage/certs/ca.pem',
+        function_exists('database_path') ? database_path('certs/ca.pem') : null,
+        function_exists('base_path') ? base_path('database/certs/ca.pem') : null,
+    ];
 
-        return $ca;
+    foreach ($candidates as $candidate) {
+        if (! empty($candidate) && file_exists($candidate)) {
+            return $candidate;
+        }
     }
 
-    $host = env('DB_HOST', '');
-    if (str_contains($host, 'aivencloud.com') && file_exists(database_path('certs/ca.pem'))) {
-        return database_path('certs/ca.pem');
+    $systemBundles = [
+        '/etc/pki/tls/certs/ca-bundle.crt',
+        '/etc/ssl/certs/ca-certificates.crt',
+        '/etc/ssl/cert.pem',
+    ];
+
+    foreach ($systemBundles as $bundle) {
+        if (file_exists($bundle)) {
+            return $bundle;
+        }
     }
 
     return null;

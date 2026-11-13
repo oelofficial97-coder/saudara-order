@@ -1,38 +1,37 @@
 {
   "version": 2,
   "framework": null,
+  "outputDirectory": "public",
   "functions": {
     "api/index.php": {
       "runtime": "vercel-php@0.8.0",
-      "maxDuration": 60
+      "maxDuration": 60,
+      "includeFiles": "database/certs/**"
     }
   },
+  "headers": [
+    {
+      "source": "/build/assets/(.*)",
+      "headers": [
+        {
+          "key": "cache-control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/saudara/(.*)",
+      "headers": [
+        {
+          "key": "cache-control",
+          "value": "public, max-age=86400"
+        }
+      ]
+    }
+  ],
   "routes": [
     {
-      "src": "/build/assets/(.*)",
-      "headers": {
-        "cache-control": "public, max-age=31536000, immutable"
-      },
-      "dest": "/public/build/assets/$1"
-    },
-    {
-      "src": "/build/(.*)",
-      "dest": "/public/build/$1"
-    },
-    {
-      "src": "/saudara/(.*)",
-      "headers": {
-        "cache-control": "public, max-age=86400"
-      },
-      "dest": "/public/saudara/$1"
-    },
-    {
-      "src": "/favicon.ico",
-      "dest": "/public/favicon.ico"
-    },
-    {
-      "src": "/robots.txt",
-      "dest": "/public/robots.txt"
+      "handle": "filesystem"
     },
     {
       "src": "^/(\\.env.*|vendor(/.*)?|storage(/.*)?|bootstrap(/.*)?|config(/.*)?|database(/.*)?|app(/.*)?|resources(/.*)?|routes(/.*)?|tests(/.*)?|composer\\.(json|lock)|package(-lock)?\\.json|vercel\\.json|Dockerfile.*|Caddyfile.*|deploy(/.*)?|artisan|SPEC\\.json|AGENTS\\.md)$",
