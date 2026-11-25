@@ -3,6 +3,39 @@
 use Illuminate\Support\Str;
 use Pdo\Mysql;
 
+$resolveSslCa = static function (): ?string {
+    $ca = env('MYSQL_ATTR_SSL_CA');
+    $candidates = [
+        $ca,
+        ! empty($ca) && str_starts_with($ca, '/app/') ? base_path(substr($ca, 5)) : null,
+        ! empty($ca) && function_exists('base_path') ? base_path($ca) : null,
+        ! empty($ca) && function_exists('database_path') ? database_path($ca) : null,
+        '/tmp/storage/certs/ca.pem',
+        function_exists('database_path') ? database_path('certs/ca.pem') : null,
+        function_exists('base_path') ? base_path('database/certs/ca.pem') : null,
+    ];
+
+    foreach ($candidates as $candidate) {
+        if (! empty($candidate) && file_exists($candidate)) {
+            return $candidate;
+        }
+    }
+
+    $systemBundles = [
+        '/etc/pki/tls/certs/ca-bundle.crt',
+        '/etc/ssl/certs/ca-certificates.crt',
+        '/etc/ssl/cert.pem',
+    ];
+
+    foreach ($systemBundles as $bundle) {
+        if (file_exists($bundle)) {
+            return $bundle;
+        }
+    }
+
+    return null;
+};
+
 return [
 
     /*
@@ -60,7 +93,7 @@ return [
             'strict' => true,
             'engine' => 'InnoDB',
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
+                (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => $resolveSslCa(),
             ]) : [],
         ],
 
@@ -80,7 +113,7 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
+                (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => $resolveSslCa(),
             ]) : [],
         ],
 
